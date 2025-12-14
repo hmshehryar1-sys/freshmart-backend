@@ -8,10 +8,11 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://freshmart-frontend-nu.vercel.app",
-    ],
+    origin:
+      process.env.NODE_ENV === "production"
+        ? "https://freshmart-frontend-nu.vercel.app"
+        : "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
 );
