@@ -50,8 +50,6 @@ const connectDB = async () => {
   }
 };
 
-connectDB();
-
 // Handle MongoDB connection events
 mongoose.connection.on("disconnected", () => {
   console.log("⚠️  MongoDB disconnected");
@@ -63,22 +61,24 @@ mongoose.connection.on("reconnected", () => {
 
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
-  console.log(`📡 API available at http://localhost:${PORT}/api`);
-});
+connectDB().then(() => {
+  const server = app.listen(PORT, () => {
+    console.log(`🚀 Server is running on port ${PORT}`);
+    console.log(`📡 API available at http://localhost:${PORT}/api`);
+  });
 
-// Handle port already in use error
-server.on("error", (error) => {
-  if (error.code === "EADDRINUSE") {
-    console.error(`❌ Port ${PORT} is already in use.`);
-    console.error("💡 To fix this:");
-    console.error(`   1. Find the process: netstat -ano | findstr :${PORT}`);
-    console.error("   2. Kill the process: taskkill /PID <PID> /F");
-    console.error("   3. Or change the PORT in .env file");
-    process.exit(1);
-  } else {
-    console.error("❌ Server error:", error);
-    process.exit(1);
-  }
+  // Handle port already in use error
+  server.on("error", (error) => {
+    if (error.code === "EADDRINUSE") {
+      console.error(`❌ Port ${PORT} is already in use.`);
+      console.error("💡 To fix this:");
+      console.error(`   1. Find the process: netstat -ano | findstr :${PORT}`);
+      console.error("   2. Kill the process: taskkill /PID <PID> /F");
+      console.error("   3. Or change the PORT in .env file");
+      process.exit(1);
+    } else {
+      console.error("❌ Server error:", error);
+      process.exit(1);
+    }
+  });
 });
